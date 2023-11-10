@@ -19,12 +19,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 
@@ -32,29 +30,21 @@ import androidx.compose.ui.unit.dp
 fun Chats(){
  vistaCard()
 }
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun vistaCard(){
     val expandedState = remember { mutableStateOf(false) }
-    val offset by remember { mutableStateOf(IntOffset(0,0)) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn{
-            items(getInfoWas()){ info ->
-                Mycard(infoWas = info)
-            }
+    LazyColumn(modifier = Modifier.pointerInput(true){
+        detectTapGestures(onLongPress = { expandedState.value = true})
+    }){
+        items(getInfoWas()){ info ->
+            Mycard(infoWas = info)
         }
-        Box(modifier = Modifier
-            .modifierLocalConsumer { coordinates ->
-                detectTapGestures { offset = IntOffset(coordinates.x.toInt(), coordinates.y.toInt()) }
-            }
-        ) {
-            if (expandedState.value){
-                MyDropDownMenu(onDismissRequest = {expandedState.value = false}, offset = offset)
-            }
-        }
-
     }
+    if (expandedState.value){
+        MyDropDownMenu(onDismissRequest = {expandedState.value = false})
+    }
+
 }
 @Composable
 fun Mycard(infoWas: infoWas){
@@ -72,13 +62,9 @@ fun Mycard(infoWas: infoWas){
 }
 
 @Composable
-fun MyDropDownMenu(onDismissRequest: () -> Unit, offset: IntOffset){
+fun MyDropDownMenu(onDismissRequest: () -> Unit){
 
-    DropdownMenu(
-        expanded = true,
-        onDismissRequest = { onDismissRequest() },
-        offset = DpOffset(offset.x.dp, offset.y.dp)
-    ){
+    DropdownMenu(expanded = true, onDismissRequest = { onDismissRequest() }) {
         DropdownMenuItem(text = { Text(text = "Salir del grupo") }, onClick = { /*TODO*/ })
         DropdownMenuItem(text = { Text(text = "Info. grupo") }, onClick = { /*TODO*/ })
         DropdownMenuItem(text = { Text(text = "Crear acceso directo") }, onClick = { /*TODO*/ })
