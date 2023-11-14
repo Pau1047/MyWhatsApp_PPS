@@ -1,14 +1,20 @@
 package com.example.mywhatsapp_pps
 
+import androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi
+import androidx.compose.animation.graphics.res.animatedVectorResource
+import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
+import androidx.compose.animation.graphics.vector.AnimatedImageVector
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -20,11 +26,14 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.AlertDialogDefaults.containerColor
+import androidx.compose.material3.AlertDialogDefaults.shape
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +55,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -57,7 +67,9 @@ import kotlinx.coroutines.launch
 fun Portada(){
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
-Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),topBar = { MyTop(scrollBehavior)}){
+Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    topBar = { MyTop(scrollBehavior)},
+    floatingActionButton = { MyFAB()}){
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -68,12 +80,6 @@ Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
             .fillMaxSize()
             .padding(bottom = it.calculateBottomPadding()) ){
             MyTabs()
-        }
-
-        Box(modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.BottomEnd
-        ){
-            MyFAB()
         }
     }
     }
@@ -108,7 +114,7 @@ fun MyTop(scrollBehavior: TopAppBarScrollBehavior){
 fun MyTabs(){
     var state by remember { mutableStateOf(0) }
     val titles = listOf("Chats", "Novedades", "Llamadas")
-    val pagerState = rememberPagerState(initialPage = 0)
+    val pagerState = rememberPagerState(initialPage = 0, initialPageOffsetFraction = 0f){3}
     val scope = rememberCoroutineScope()
 
     Column {
@@ -121,7 +127,7 @@ fun MyTabs(){
                 )
             }
         }
-        HorizontalPager(pageCount = 3, state = pagerState) { page ->
+        HorizontalPager(state = pagerState) { page ->
             when(page){
                 0 -> Chats()
                 1 -> Novedades()
@@ -132,8 +138,26 @@ fun MyTabs(){
 }
 @Composable
 fun MyFAB(){
-    FloatingActionButton(onClick = { /*TODO*/ }) {
-     Icon(imageVector = Icons.Filled.Check, contentDescription = " " )
+    FloatingActionButton(onClick = {},
+        modifier = Modifier.size(60.dp),
+        containerColor = VerdeWas,
+        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()) {
+        animatedCorazon()
     }
+}
+
+@OptIn(ExperimentalAnimationGraphicsApi::class)
+@Composable
+fun animatedCorazon(){
+    val image = AnimatedImageVector.animatedVectorResource(R.drawable.corazon_animado)
+    var atEnd by remember { mutableStateOf(false) }
+    Image(
+        painter = rememberAnimatedVectorPainter(image, atEnd),
+        contentDescription = "VectorDrawable",
+        modifier = Modifier.clickable {
+            atEnd = !atEnd
+        },
+        contentScale = ContentScale.Crop,
+    )
 }
 
