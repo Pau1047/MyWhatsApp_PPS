@@ -66,13 +66,11 @@ fun vistaCard(){
 @Composable
 fun Mycard(infoWas: infoWas){
     val scope = rememberCoroutineScope()
-    val expandedState = remember { mutableStateOf(false) }
+    var showMenu by remember { mutableStateOf(false)}
         Row (modifier = Modifier.pointerInput(true){
             detectTapGestures(onLongPress = { scope.launch { showMenu = !showMenu }})
         }){
-            MyDropDownMenu {
-
-            }
+            MyDropDownMenu(showMenu){showMenu = it}
             Image(
                 painterResource(id = infoWas.imagen), contentDescription = " ",
                 modifier = Modifier
@@ -91,9 +89,9 @@ fun Mycard(infoWas: infoWas){
 }
 
 @Composable
-fun MyDropDownMenu(onDismissRequest: () -> Unit){
+fun MyDropDownMenu(showMenu: Boolean, onShowMenuChange: (Boolean) -> Unit){
 
-    DropdownMenu(expanded = true, onDismissRequest = { onDismissRequest() }) {
+    DropdownMenu(expanded = showMenu, onDismissRequest = { onShowMenuChange(false) }) {
         DropdownMenuItem(text = { Text(text = "Salir del grupo") }, onClick = { /*TODO*/ })
         DropdownMenuItem(text = { Text(text = "Info. grupo") }, onClick = { /*TODO*/ })
         DropdownMenuItem(text = { Text(text = "Crear acceso directo") }, onClick = { /*TODO*/ })
